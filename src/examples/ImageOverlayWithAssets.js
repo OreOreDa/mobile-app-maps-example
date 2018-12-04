@@ -1,25 +1,31 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Dimensions,
-  TouchableOpacity,
 } from 'react-native';
 
-import MapView, { Marker, ProviderPropType } from 'react-native-maps';
-import flagPinkImg from '../assets/flag-pink.png';
+import MapView from 'react-native-maps';
+import flagPinkImg from './assets/flag-pink.png';
 
 const { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
-const LATITUDE_DELTA = 0.0922;
+const LATITUDE = 35.679976;
+const LONGITUDE = 139.768458;
+const LATITUDE_DELTA = 0.01;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-let id = 0;
+// 116423, 51613, 17
+const OVERLAY_TOP_LEFT_COORDINATE = [35.68184060244454, 139.76531982421875];
+const OVERLAY_BOTTOM_RIGHT_COORDINATE = [35.679609609368576, 139.76806640625];
+const IMAGE = flagPinkImg;
 
-class CustomMarkers extends React.Component {
+export default class ImageOverlayWithURL extends Component {
+
+  static propTypes = {
+    provider: MapView.ProviderPropType,
+  };
+
   constructor(props) {
     super(props);
 
@@ -30,22 +36,11 @@ class CustomMarkers extends React.Component {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
       },
-      markers: [],
+      overlay: {
+        bounds: [OVERLAY_TOP_LEFT_COORDINATE, OVERLAY_BOTTOM_RIGHT_COORDINATE],
+        image: IMAGE,
+      },
     };
-
-    this.onMapPress = this.onMapPress.bind(this);
-  }
-
-  onMapPress(e) {
-    this.setState({
-      markers: [
-        ...this.state.markers,
-        {
-          coordinate: e.nativeEvent.coordinate,
-          key: `foo${id++}`,
-        },
-      ],
-    });
   }
 
   render() {
@@ -55,33 +50,16 @@ class CustomMarkers extends React.Component {
           provider={this.props.provider}
           style={styles.map}
           initialRegion={this.state.region}
-          onPress={this.onMapPress}
         >
-          {this.state.markers.map(marker => (
-            <Marker
-              title={marker.key}
-              image={flagPinkImg}
-              key={marker.key}
-              coordinate={marker.coordinate}
-            />
-          ))}
+          <MapView.Overlay
+            bounds={this.state.overlay.bounds}
+            image={this.state.overlay.image}
+          />
         </MapView>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            onPress={() => this.setState({ markers: [] })}
-            style={styles.bubble}
-          >
-            <Text>Tap to create a marker of random color</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   }
 }
-
-CustomMarkers.propTypes = {
-  provider: ProviderPropType,
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -114,5 +92,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
 });
-
-export default CustomMarkers;

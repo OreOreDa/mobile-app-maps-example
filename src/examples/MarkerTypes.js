@@ -6,8 +6,8 @@ import {
   Dimensions,
 } from 'react-native';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
-import flagBlueImg from '../assets/flag-blue.png';
-import flagPinkImg from '../assets/flag-pink.png';
+import flagBlueImg from './assets/flag-blue.png';
+import flagPinkImg from './assets/flag-pink.png';
 
 const { width, height } = Dimensions.get('window');
 

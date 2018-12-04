@@ -22,7 +22,7 @@ https://console.developers.google.com/apis/library/maps-ios-backend.googleapis.c
 Create a `Podfile` in `ios` as below:
 
 ~~~
-target 'replay' do
+target 'maps' do
   rn_path = '../node_modules/react-native'
   rn_maps_path = '../node_modules/react-native-maps'
 
@@ -76,13 +76,14 @@ cd ios
 pod install
 ```
 
-Do NOT run `react-native link` command for react-native-maps.
 After that, use `.xcworkspace`, not `.xcproject`.
 
 Insert Google Maps API key in AppDelegate.m
 
 ### Android
 
-Do NOT run `react-native link` command for react-native-maps.
+```
+react-native link
+```
 
 Insert Google Maps API key in AndroidManifest.xml

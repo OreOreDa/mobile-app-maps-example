@@ -1,31 +1,17 @@
-import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-} from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Text, Dimensions } from 'react-native';
 
-import MapView from 'react-native-maps';
-import flagPinkImg from '../assets/flag-pink.png';
+import MapView, { ProviderPropType } from 'react-native-maps';
 
 const { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
-const LATITUDE = 35.679976;
-const LONGITUDE = 139.768458;
-const LATITUDE_DELTA = 0.01;
+const LATITUDE = 37.78825;
+const LONGITUDE = -122.4324;
+const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-// 116423, 51613, 17
-const OVERLAY_TOP_LEFT_COORDINATE = [35.68184060244454, 139.76531982421875];
-const OVERLAY_BOTTOM_RIGHT_COORDINATE = [35.679609609368576, 139.76806640625];
-const IMAGE = flagPinkImg;
 
-export default class ImageOverlayWithURL extends Component {
-
-  static propTypes = {
-    provider: MapView.ProviderPropType,
-  };
-
+class MapBoundaries extends React.Component {
   constructor(props) {
     super(props);
 
@@ -36,30 +22,41 @@ export default class ImageOverlayWithURL extends Component {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
       },
-      overlay: {
-        bounds: [OVERLAY_TOP_LEFT_COORDINATE, OVERLAY_BOTTOM_RIGHT_COORDINATE],
-        image: IMAGE,
-      },
+      mapBoundaries: null,
     };
+  }
+
+  async onRegionChangeComplete() {
+    this.setState({
+      mapBoundaries: await this.map.getMapBoundaries(),
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
         <MapView
+          ref={ref => {
+            this.map = ref;
+          }}
           provider={this.props.provider}
           style={styles.map}
           initialRegion={this.state.region}
-        >
-          <MapView.Overlay
-            bounds={this.state.overlay.bounds}
-            image={this.state.overlay.image}
-          />
-        </MapView>
+          onRegionChangeComplete={() => this.onRegionChangeComplete()}
+        />
+        <View style={styles.buttonContainer}>
+          <View style={styles.bubble}>
+            <Text>{JSON.stringify(this.state.mapBoundaries)}</Text>
+          </View>
+        </View>
       </View>
     );
   }
 }
+
+MapBoundaries.propTypes = {
+  provider: ProviderPropType,
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -92,3 +89,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
 });
+
+export default MapBoundaries;
